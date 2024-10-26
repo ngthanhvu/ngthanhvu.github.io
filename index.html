@@ -2,44 +2,142 @@
 <html lang="en">
 
 <head>
-     <meta charset="UTF-8">
-     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-     <title>About me</title>
-     <script src="https://unpkg.com/@phosphor-icons/web@2.1.1/src/index.js"></script>
-     <link rel="stylesheet" href="css/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - Ngthanhvu</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
+    <style>
+        body {
+            background-color: #1a1a2e;
+            color: #fff;
+        }
+
+        .intro {
+            padding: 100px 0;
+            color: #e0e0e0;
+        }
+
+        .intro h1 {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .intro p {
+            color: #b0b0b0;
+        }
+
+        .btn-custom {
+            background-color: #ffc107;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+        }
+
+        .btn-custom:hover {
+            background-color: #e0a800;
+        }
+
+        .section-title {
+            margin-top: 50px;
+            color: #ffc107;
+            font-size: 2rem;
+            text-align: center;
+        }
+
+        .card {
+            background-color: #2a2a4e;
+        }
+
+        @media screen and (max-width: 768px) {
+        #profile-image {
+            display: none;
+        }
+    }
+    </style>
 </head>
 
 <body>
-     <header>
-          <a href="#" class="logo">Nguyen Thanh Vu</a>
-          <ul class="navmenu">
-               <li><a href="">Home</a></li>
-               <li><a href="">About</a></li>
-               <li><a href="assets/login.html">Login</a></li>
-          </ul>
-     </header>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">NgThanh<span style="color: #ffc107;">Vu.</span></a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#section-0">Trang chủ</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#section-1">Liên kết</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#section-2">Bài viết</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
 
-     <section class="home">
-          <div class="home-text">
-               <h2>Hello I'm Thanh vu<i class="ph-bold ph-hand-waving"></i></h2>
-               <h3>Font-end Developer</h3>
-               <p>Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
-               <div class="name-btn">
-                    <a href="#" class="btn">Contact Info</a>
-               </div>
-          </div>
-          <div class="home-img">
-               <img src="img/picture.png" alt="404 Not Found">
-          </div>
-     </section>
-     <div class="socials-icons">
-          <a href="https://instagram.com/thanhvu.user"><i class="ph-bold ph-instagram-logo"></i></a>
-          <a href="https://facebook.com/thanhvu.user"><i class="ph-bold ph-facebook-logo"></i></a>
-          <a href="https://github.com/ngthanhvu"><i class="ph-bold ph-github-logo"></i></a>
-     </div>
-     <a href="" class="scroll-btn">Scroll Down
-          <i class="ph-bold ph-arrow-bend-right-down"></i>
-     </a>
+    <!-- Introduction Section -->
+    <section class="intro text-center text-lg-start" style="height: 100vh;" id="section-0">
+        <div class="container d-lg-flex align-items-center mt-3">
+            <div class="col-lg-6">
+                <p class="text-warning">Xin chào</p>
+                <h1>Tôi là Nguyễn Thanh Vũ</h1>
+                <p>Chào mừng đến trang giới thiệu của tôi, đây là <b>"Profile cá nhân"</b> của <a href="#" class="text-warning">Ngthanhvu</a> nơi tôi chia sẻ về bản thân, những sở thích và những dự định trong tương lai...</p>
+                <a href="#" class="btn btn-custom">Xem ngay</a>
+            </div>
+            <div class="col-lg-6 text-center">
+                <img src="https://img.a.transfermarkt.technology/portrait/big/3816-1535533360.jpg?lm=1" alt="Profile Picture" class="img-fluid rounded-3" id="profile-image" width="300" height="400">
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 1: Cards for Links -->
+    <section class="container" id="section-1" style="height: 100vh; padding-top: 100px;">
+        <h2 class="section-title">Các Liên Kết Khác</h2>
+        <div class="row mt-4">
+            <div class="col-md-4">
+                <div class="card text-center mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Lọc, format ccv</h5>
+                        <p class="card-text">Mô tả ngắn gọn cho liên kết này.</p>
+                        <a href="loc.html" class="btn btn-custom">Dùng ngay</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 2: Blog Posts -->
+    <section class="container" id="section-2" style="height: 100vh; padding-top: 100px;">
+        <h2 class="section-title">Các Bài Viết Mới Nhất</h2>
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Bài Viết 1</h5>
+                        <p class="card-text">Đây là phần mô tả ngắn cho bài viết đầu tiên. Nội dung giới thiệu về bài viết này.</p>
+                        <a href="#" class="btn btn-custom">Đọc thêm</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Bài Viết 2</h5>
+                        <p class="card-text">Đây là phần mô tả ngắn cho bài viết thứ hai. Nội dung giới thiệu về bài viết này.</p>
+                        <a href="#" class="btn btn-custom">Đọc thêm</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 </body>
 
 </html>
