@@ -8,9 +8,12 @@
     <!-- Link Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- boostrap icon -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" integrity="sha512-dPXYcDub/aeb08c63jRq/k6GaKccl256JQy/AnOq7CAnEZ9FzSL9wSbcZkMp4R26vBsMLFYH4kQ67/bbV8XaCQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <!-- sweetalert2 -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css"
+        integrity="sha512-dPXYcDub/aeb08c63jRq/k6GaKccl256JQy/AnOq7CAnEZ9FzSL9wSbcZkMp4R26vBsMLFYH4kQ67/bbV8XaCQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- Notyf CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css">
     <style>
         .copy-container {
             position: relative;
@@ -38,8 +41,9 @@
 </head>
 
 <body>
+    <!-- <h1 class="mt-2 text-center">LỌC DANH SÁCH THẺ</h1> -->
     <div class="container mt-5">
-        <h2 class="mb-3">Nhập danh sách thẻ</h2>
+        <h3 class="mb-3">Nhập danh sách thẻ</h3>
         <div class="mb-3">
             <textarea id="inputData" class="form-control" rows="5"
                 placeholder="Nhập dữ liệu dạng: 4388540100286276|02|2029|888 ..."></textarea>
@@ -48,18 +52,36 @@
             <button class="btn btn-primary" onclick="processInput()"><i class="bi bi-funnel"></i> Lọc Thông Tin</button>
         </div>
 
-        <h2 class="mt-5">Kết quả</h2>
+        <h3 class="mt-5">Kết quả</h3>
         <div class="copy-container">
             <button class="btn copy-btn btn-danger" onclick="copyToClipboard()"><i class="bi bi-clipboard"></i></button>
             <pre id="output" class="bg-light p-3 border"></pre>
+        </div>
+
+        <div class="d-flex">
+            <a class="text-decoration-none text-dark me-3" href="https://github.com/ngthanhvu"><i
+                    class="bi bi-github"></i>
+                ngthanhvu</a>
+            <a href="https://t.me/ngthanhvu" class="text-decoration-none text-dark me-3"><i class="bi bi-telegram">Vũ
+                    Nhôm</i></a>
         </div>
     </div>
 
     <!-- Link Bootstrap JS and Popper -->
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+    <!-- Notyf JS -->
+    <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
 
     <script>
+        const notyf = new Notyf({
+            duration: 2000,
+            position: {
+                x: 'right',
+                y: 'top'
+            }
+        });
+
         function processData(data) {
             const lines = data.split('\n').filter(line => line.trim() !== ''); // Loại bỏ dòng trống
             const result = lines.map(line => {
@@ -84,11 +106,7 @@
             textarea.select();
             document.execCommand('copy');
             document.body.removeChild(textarea);
-            Swal.fire({
-                title: "Copy thành công",
-                text: "Nội dung đã được lưu trong clipboard",
-                icon: "success",
-            });
+            notyf.success('Copy thành công!');
         }
     </script>
 </body>
