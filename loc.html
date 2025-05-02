@@ -5,88 +5,43 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lọc Thông Tin</title>
-    <!-- Link Bootstrap CSS -->
+
+    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- boostrap icon -->
-    <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css"
-        integrity="sha512-dPXYcDub/aeb08c63jRq/k6GaKccl256JQy/AnOq7CAnEZ9FzSL9wSbcZkMp4R26vBsMLFYH4kQ67/bbV8XaCQ=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <!-- Notyf CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css">
-    <style>
-        .copy-container {
-            position: relative;
-            display: inline-block;
-            width: 100%;
-        }
 
-        .copy-btn {
-            position: absolute;
-            top: 10px;
-            right: 20px;
-            margin: 5px;
-        }
-
-        .copy-btn:hover {
-            cursor: pointer;
-        }
-
-        #output {
-            width: 100%;
-            height: 450px;
-            overflow: auto;
-        }
-    </style>
+    <!-- IziToast CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/izitoast@1.4.0/dist/css/iziToast.min.css">
 </head>
 
 <body>
-    <!-- <h1 class="mt-2 text-center">LỌC DANH SÁCH THẺ</h1> -->
     <div class="container mt-5">
-        <h3 class="mb-3">Nhập danh sách thẻ</h3>
+        <h2 class="mb-3">Nhập danh sách thẻ</h2>
         <div class="mb-3">
             <textarea id="inputData" class="form-control" rows="5"
                 placeholder="Nhập dữ liệu dạng: 4388540100286276|02|2029|888 ..."></textarea>
         </div>
         <div class="mb-3">
-            <button class="btn btn-primary" onclick="processInput()"><i class="bi bi-funnel"></i> Lọc Thông Tin</button>
+            <button class="btn btn-primary" onclick="processInput()">Lọc Thông Tin</button>
+            <button class="btn btn-success" onclick="copyToClipboard()">Sao chép kết quả</button>
         </div>
 
-        <h3 class="mt-5">Kết quả</h3>
-        <div class="copy-container">
-            <button class="btn copy-btn btn-danger" onclick="copyToClipboard()"><i class="bi bi-clipboard"></i></button>
-            <pre id="output" class="bg-light p-3 border"></pre>
-        </div>
-
-        <div class="d-flex">
-            <a class="text-decoration-none text-dark me-3" href="https://github.com/ngthanhvu"><i
-                    class="bi bi-github"></i>
-                ngthanhvu</a>
-            <a href="https://t.me/ngthanhvu" class="text-decoration-none text-dark me-3"><i class="bi bi-telegram">Vũ
-                    Nhôm</i></a>
-        </div>
+        <h2 class="mt-5">Kết quả</h2>
+        <pre id="output" class="bg-light p-3 border"></pre>
     </div>
 
-    <!-- Link Bootstrap JS and Popper -->
+    <!-- Bootstrap JS and Popper -->
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
-    <!-- Notyf JS -->
-    <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
+
+    <!-- IziToast JS -->
+    <script src="https://cdn.jsdelivr.net/npm/izitoast@1.4.0/dist/js/iziToast.min.js"></script>
 
     <script>
-        const notyf = new Notyf({
-            duration: 2000,
-            position: {
-                x: 'right',
-                y: 'top'
-            }
-        });
-
         function processData(data) {
-            const lines = data.split('\n').filter(line => line.trim() !== ''); // Loại bỏ dòng trống
+            const lines = data.split('\n').filter(line => line.trim() !== '');
             const result = lines.map(line => {
                 const [cardNumber, expiryMonth, expiryYear, cvv] = line.split('|');
-                return `${cardNumber}\t${expiryMonth}/${expiryYear}\t${cvv}`; // Tách bằng dấu tab
+                return `${cardNumber}\t${expiryMonth}/${expiryYear}\t${cvv}`;
             });
             return result.join('\n');
         }
@@ -100,13 +55,27 @@
 
         function copyToClipboard() {
             const outputText = document.getElementById('output').textContent;
+            if (!outputText) {
+                iziToast.error({
+                    title: 'Lỗi',
+                    message: 'Không có dữ liệu để sao chép!',
+                    position: 'topRight'
+                });
+                return;
+            }
+
             const textarea = document.createElement('textarea');
             textarea.value = outputText;
             document.body.appendChild(textarea);
             textarea.select();
             document.execCommand('copy');
             document.body.removeChild(textarea);
-            notyf.success('Copy thành công!');
+
+            iziToast.success({
+                title: 'Thành công',
+                message: 'Kết quả đã được sao chép!',
+                position: 'topRight'
+            });
         }
     </script>
 </body>
