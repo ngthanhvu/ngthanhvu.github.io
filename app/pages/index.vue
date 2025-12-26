@@ -101,7 +101,10 @@ useHead({
     {
       property: "og:type",
       content: "website"
-    }
+    },
+  ],
+  link: [
+    { rel: 'icon', type: 'image/png', href: 'https://avatars.githubusercontent.com/u/150665233?v=4' }
   ]
 })
 const links = [
