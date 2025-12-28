@@ -122,7 +122,6 @@ const typingSpeed = 120
 const deletingSpeed = 70
 const holdAfterType = 1200
 const holdAfterDelete = 500
-
 let timer: number
 
 function startTypewriter() {
@@ -131,6 +130,8 @@ function startTypewriter() {
 
   const loop = () => {
     const word = words[index.value]
+
+    if (!word) return
 
     if (!isDeleting) {
       text.value = word.slice(0, charIndex + 1)

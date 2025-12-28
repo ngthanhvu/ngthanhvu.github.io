@@ -15,7 +15,8 @@
             active-class="text-white font-semibold">
             Home
           </NuxtLink>
-          <NuxtLink to="/post" class="text-gray-400 hover:text-white text-sm font-medium transition-colors duration-200"
+          <NuxtLink to="/posts"
+            class="text-gray-400 hover:text-white text-sm font-medium transition-colors duration-200"
             active-class="text-white font-semibold">
             Posts
           </NuxtLink>
