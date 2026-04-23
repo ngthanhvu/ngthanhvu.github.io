@@ -111,6 +111,29 @@ Frontend sẽ chạy tại:
 http://localhost:3000
 ```
 
+## Chạy bằng Docker
+
+Dự án có sẵn Dockerfile riêng cho từng phần và một file `docker-compose.yml` ở thư mục gốc.
+
+Build và chạy cả frontend lẫn backend:
+
+```bash
+docker compose up --build
+```
+
+Sau khi chạy thành công:
+
+```text
+Frontend: http://localhost:3000
+Backend:  http://localhost:4000
+```
+
+Dừng container:
+
+```bash
+docker compose down
+```
+
 ## API hiện có
 
 ### `GET /health`
