@@ -83,6 +83,63 @@ PORT=4000
 
 Nếu không cấu hình, backend mặc định chạy ở cổng `4000`.
 
+## Database migration
+
+Backend dùng MySQL và quản lý schema bằng migration trong thư mục:
+
+```text
+backend/src/database/migrations/
+```
+
+Trước khi chạy migration, tạo file `backend/.env` và cấu hình các biến MySQL:
+
+```env
+MYSQL_HOST=127.0.0.1
+MYSQL_PORT=3306
+MYSQL_USER=root
+MYSQL_PASSWORD=your-password
+MYSQL_DATABASE=portfolio_auth
+MYSQL_CONNECTION_LIMIT=10
+```
+
+Chạy các migration chưa chạy:
+
+```bash
+cd backend
+npm run migrate
+```
+
+Lệnh này sẽ tự tạo database nếu chưa tồn tại, tạo bảng `schema_migrations` để lưu các migration đã chạy, rồi chạy lần lượt các file trong `src/database/migrations`.
+
+Rollback migration gần nhất:
+
+```bash
+cd backend
+npm run migrate:down
+```
+
+Khi thêm migration mới, tạo file `.js` trong `backend/src/database/migrations`, export object `migration`, rồi import migration đó vào `backend/src/database/migrations/index.ts`.
+
+Ví dụ:
+
+```js
+export const migration = {
+  name: "003_create_posts",
+  up: async (pool) => {
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS posts (
+        id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+        title VARCHAR(255) NOT NULL,
+        PRIMARY KEY (id)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    `);
+  },
+  down: async (pool) => {
+    await pool.query("DROP TABLE IF EXISTS posts;");
+  }
+};
+```
+
 ## Chạy dự án ở môi trường phát triển
 
 Chạy backend:
@@ -167,10 +224,12 @@ Ví dụ response:
 ### Backend
 
 ```bash
-npm run dev        # chạy server bằng tsx watch
-npm run build      # biên dịch TypeScript
-npm run start      # chạy bản build từ dist/index.js
-npm run typecheck  # kiểm tra type, không xuất file build
+npm run dev          # chạy server bằng tsx watch
+npm run migrate      # chạy các database migration chưa chạy
+npm run migrate:down # rollback migration gần nhất
+npm run build        # biên dịch TypeScript
+npm run start        # chạy bản build từ dist/index.js
+npm run typecheck    # kiểm tra type, không xuất file build
 ```
 
 ### Frontend

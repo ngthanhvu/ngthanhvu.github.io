@@ -1,29 +1,19 @@
-import cors from "cors";
-import dotenv from "dotenv";
-import express, { type Request, type Response } from "express";
+import { app } from "./app.js";
+import { verifyDatabaseConnection } from "./config/database.js";
+import { env } from "./config/env.js";
+import { errorHandler } from "./middleware/error-handler.js";
 
-dotenv.config();
+const startServer = async (): Promise<void> => {
+  await verifyDatabaseConnection();
 
-const app = express();
-const port = Number(process.env.PORT) || 4000;
+  app.use(errorHandler);
 
-app.use(cors());
-app.use(express.json());
-
-app.get("/health", (_req: Request, res: Response) => {
-  res.json({
-    ok: true,
-    service: "backend",
-    timestamp: new Date().toISOString()
+  app.listen(env.port, () => {
+    console.log(`Backend is running at http://localhost:${env.port}`);
   });
-});
+};
 
-app.get("/api/hello", (_req: Request, res: Response) => {
-  res.json({
-    message: "Hello from Express + TypeScript"
-  });
-});
-
-app.listen(port, () => {
-  console.log(`Backend is running at http://localhost:${port}`);
+startServer().catch((error) => {
+  console.error("Failed to start backend", error);
+  process.exit(1);
 });
