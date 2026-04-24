@@ -34,4 +34,27 @@ function Alert({
   );
 }
 
-export { Alert, alertVariants };
+function AlertTitle({ className, ...props }: ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="alert-title"
+      className={cn("col-start-2 line-clamp-1 min-h-4 font-medium tracking-tight", className)}
+      {...props}
+    />
+  );
+}
+
+function AlertDescription({ className, ...props }: ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="alert-description"
+      className={cn(
+        "text-muted-foreground col-start-2 grid justify-items-start gap-1 text-sm [&_p]:leading-relaxed",
+        className
+      )}
+      {...props}
+    />
+  );
+}
+
+export { Alert, AlertDescription, AlertTitle, alertVariants };

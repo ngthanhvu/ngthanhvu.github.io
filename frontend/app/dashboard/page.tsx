@@ -19,6 +19,16 @@ import { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle
+} from "@/components/ui/alert-dialog";
+import {
   Card,
   CardContent,
   CardDescription,
@@ -42,14 +52,26 @@ const navigationItems = [
 
 export default function DashboardPage() {
   const router = useRouter();
-  const [session, setSession] = useState<AuthSession | null>(readStoredSession);
+  const [session, setSession] = useState<AuthSession | null>(null);
+  const [isCheckingSession, setIsCheckingSession] = useState(true);
   const [apiHealth, setApiHealth] = useState<"unknown" | "online" | "offline">("unknown");
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   useEffect(() => {
-    if (!session) {
-      router.replace("/login");
-    }
-  }, [router, session]);
+    const timer = window.setTimeout(() => {
+      const storedSession = readStoredSession();
+
+      if (!storedSession) {
+        router.replace("/login");
+        return;
+      }
+
+      setSession(storedSession);
+      setIsCheckingSession(false);
+    }, 0);
+
+    return () => window.clearTimeout(timer);
+  }, [router]);
 
   useEffect(() => {
     requestJson<{ ok: boolean }>("/health")
@@ -60,10 +82,11 @@ export default function DashboardPage() {
   const logout = () => {
     clearSession();
     setSession(null);
+    setShowLogoutConfirm(false);
     router.replace("/login");
   };
 
-  if (!session) {
+  if (isCheckingSession || !session) {
     return null;
   }
 
@@ -71,7 +94,11 @@ export default function DashboardPage() {
     <main className="min-h-svh bg-background text-foreground">
       <div className="grid min-h-svh lg:grid-cols-[260px_1fr]">
         <aside className="hidden border-r bg-sidebar text-sidebar-foreground lg:flex lg:flex-col">
-          <SidebarContent session={session} apiHealth={apiHealth} logout={logout} />
+          <SidebarContent
+            session={session}
+            apiHealth={apiHealth}
+            logout={() => setShowLogoutConfirm(true)}
+          />
         </aside>
 
         <section className="flex min-w-0 flex-col">
@@ -91,7 +118,12 @@ export default function DashboardPage() {
           </header>
 
           <div className="border-b bg-sidebar px-4 py-4 lg:hidden">
-            <SidebarContent session={session} apiHealth={apiHealth} logout={logout} compact />
+            <SidebarContent
+              session={session}
+              apiHealth={apiHealth}
+              logout={() => setShowLogoutConfirm(true)}
+              compact
+            />
           </div>
 
           <div className="flex-1 space-y-6 p-4 sm:p-6">
@@ -158,9 +190,29 @@ export default function DashboardPage() {
           </div>
         </section>
       </div>
+
+      <AlertDialog open={showLogoutConfirm} onOpenChange={setShowLogoutConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Xác nhận đăng xuất</AlertDialogTitle>
+            <AlertDialogDescription>
+              Phiên đăng nhập hiện tại sẽ bị xoá khỏi trình duyệt.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Huỷ</AlertDialogCancel>
+            <AlertDialogAction className={buttonDestructiveClassName} onClick={logout}>
+              Đăng xuất
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </main>
   );
 }
+
+const buttonDestructiveClassName =
+  "bg-destructive text-white hover:bg-destructive/90 focus-visible:ring-destructive/20";
 
 function SidebarContent({
   session,

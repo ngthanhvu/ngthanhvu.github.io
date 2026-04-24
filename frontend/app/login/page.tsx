@@ -3,8 +3,8 @@
 import { KeyRound } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { FormEvent, useEffect, useState } from "react";
+import { toast } from "sonner";
 
-import { Alert } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -28,7 +28,6 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [status, setStatus] = useState<"idle" | "submitting">("idle");
-  const [message, setMessage] = useState("");
 
   useEffect(() => {
     if (readStoredSession()) {
@@ -38,7 +37,6 @@ export default function LoginPage() {
 
   const submitLogin = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setMessage("");
     setStatus("submitting");
 
     try {
@@ -48,9 +46,16 @@ export default function LoginPage() {
       });
 
       saveSession(session);
-      router.push("/dashboard");
+      toast.success("Đăng nhập thành công", {
+        description: "Đang chuyển đến dashboard..."
+      });
+      window.setTimeout(() => {
+        router.push("/dashboard");
+      }, 700);
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Unable to login");
+      toast.error("Đăng nhập thất bại", {
+        description: error instanceof Error ? error.message : "Unable to login"
+      });
     } finally {
       setStatus("idle");
     }
@@ -100,8 +105,6 @@ export default function LoginPage() {
                 required
               />
             </div>
-
-            {message ? <Alert variant="destructive">{message}</Alert> : null}
 
             <Button className="w-full" disabled={status === "submitting"} type="submit">
               {status === "submitting" ? "Đang xử lý..." : "Đăng nhập"}
