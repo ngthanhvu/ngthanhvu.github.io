@@ -7,21 +7,10 @@ import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  AuthSession,
-  readStoredSession,
-  requestJson,
-  saveSession
-} from "@/lib/auth-client";
+import { AuthSession, readStoredSession, requestJson, saveSession } from "@/lib/auth-client";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -54,7 +43,7 @@ export default function LoginPage() {
       }, 700);
     } catch (error) {
       toast.error("Đăng nhập thất bại", {
-        description: error instanceof Error ? error.message : "Unable to login"
+        description: error instanceof Error ? error.message : "Không thể đăng nhập"
       });
     } finally {
       setStatus("idle");
@@ -62,9 +51,9 @@ export default function LoginPage() {
   };
 
   return (
-    <main className="grid min-h-svh place-items-center bg-muted/40 px-4 py-8 text-foreground">
+    <main className="grid min-h-svh place-items-center bg-muted/40 px-4 py-6 text-foreground sm:py-8">
       <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
+        <CardHeader className="p-4 text-center sm:p-6">
           <div className="mx-auto flex size-11 items-center justify-center rounded-lg bg-primary text-primary-foreground">
             <KeyRound className="size-5" />
           </div>
@@ -72,11 +61,11 @@ export default function LoginPage() {
             <Badge className="mx-auto" variant="secondary">
               Portfolio Admin
             </Badge>
-            <CardTitle className="text-2xl">Đăng nhập</CardTitle>
+            <CardTitle className="text-xl sm:text-2xl">Đăng nhập</CardTitle>
             <CardDescription>Nhập tài khoản để vào dashboard.</CardDescription>
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-4 pt-0 sm:p-6 sm:pt-0">
           <form className="space-y-4" onSubmit={submitLogin}>
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>

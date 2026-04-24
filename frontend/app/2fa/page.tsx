@@ -43,7 +43,7 @@ export default function TwoFactorPage() {
         }
 
         setCode("");
-        setError(nextError instanceof Error ? nextError.message : "Unable to generate code");
+        setError(nextError instanceof Error ? nextError.message : "Không thể tạo mã");
       }
     };
 
@@ -73,9 +73,9 @@ export default function TwoFactorPage() {
     } catch (nextError) {
       setSecret("");
       setCode("");
-      setError(nextError instanceof Error ? nextError.message : "Invalid secret");
+      setError(nextError instanceof Error ? nextError.message : "Secret không hợp lệ");
       toast.error("Không hợp lệ", {
-        description: nextError instanceof Error ? nextError.message : "Invalid secret"
+        description: nextError instanceof Error ? nextError.message : "Secret không hợp lệ"
       });
     }
   };
@@ -103,16 +103,14 @@ export default function TwoFactorPage() {
     <main className="min-h-svh bg-muted/40 px-4 py-6 text-foreground sm:px-6 lg:px-8">
       <div className="mx-auto grid min-h-[calc(100svh-3rem)] w-full max-w-2xl place-items-center">
         <Card className="w-full max-w-xl">
-          <CardHeader>
+          <CardHeader className="p-4 sm:p-6">
             <Badge className="w-fit" variant="secondary">
               2FA Tool
             </Badge>
-            <CardTitle className="text-2xl">Tạo mã 2FA</CardTitle>
-            <CardDescription>
-              Nhập secret base32 hoặc `otpauth://` URI để xem mã TOTP hiện tại.
-            </CardDescription>
+            <CardTitle className="text-xl sm:text-2xl">Tạo mã 2FA</CardTitle>
+            <CardDescription>Nhập secret base32 hoặc otpauth:// URI để xem mã TOTP hiện tại.</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-4 p-4 sm:p-6">
             <form className="space-y-3" onSubmit={submitSecret}>
               <div className="space-y-2">
                 <Label htmlFor="secret">Secret</Label>
@@ -126,12 +124,12 @@ export default function TwoFactorPage() {
                 />
               </div>
 
-              <div className="flex flex-wrap gap-2">
-                <Button type="submit">
+              <div className="grid gap-2 sm:flex sm:flex-wrap">
+                <Button type="submit" className="w-full sm:w-auto">
                   <KeyRound className="size-4" />
                   Tạo mã
                 </Button>
-                <Button type="button" variant="outline" onClick={resetSecret}>
+                <Button type="button" variant="outline" className="w-full sm:w-auto" onClick={resetSecret}>
                   Xoá
                 </Button>
               </div>
@@ -144,23 +142,22 @@ export default function TwoFactorPage() {
               </Alert>
             ) : null}
 
-            <div className="rounded-xl border bg-background p-5">
-              <div className="flex items-center justify-between gap-3">
-                <div>
-                  <p className="text-xs font-medium uppercase tracking-normal text-muted-foreground">
-                    Current code
-                  </p>
-                  <p className="mt-2 font-mono text-4xl font-semibold tracking-[0.2em]">
+            <div className="rounded-lg border bg-background p-4 sm:p-5">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div className="min-w-0">
+                  <p className="text-xs font-medium uppercase tracking-normal text-muted-foreground">Mã hiện tại</p>
+                  <p className="mt-2 break-all font-mono text-3xl font-semibold tracking-[0.12em] sm:text-4xl sm:tracking-[0.2em]">
                     {code ? code : "------"}
                   </p>
                   <p className="mt-2 flex items-center gap-2 text-sm text-muted-foreground">
                     <Clock3 className="size-4" />
-                    {remainingSeconds}s remaining
+                    Còn {remainingSeconds} giây
                   </p>
                 </div>
                 <Button
                   type="button"
                   variant="outline"
+                  className="w-full sm:w-9"
                   size="icon"
                   onClick={copyCode}
                   disabled={!code}

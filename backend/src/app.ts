@@ -2,6 +2,8 @@ import cors from "cors";
 import express, { Request, Response } from "express";
 
 import { authRouter } from "./routes/auth.routes.js";
+import { shortUrlRouter } from "./routes/short-url.routes.js";
+import { shortUrlController } from "./controllers/short-url.controller.js";
 
 export const app = express();
 
@@ -23,3 +25,5 @@ app.get("/api/hello", (_req: Request, res: Response) => {
 });
 
 app.use("/api/auth", authRouter);
+app.use("/api/urls", shortUrlRouter);
+app.get("/u/:code", shortUrlController.redirect);

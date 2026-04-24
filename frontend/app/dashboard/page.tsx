@@ -1,10 +1,21 @@
 "use client";
 
 import type { LucideIcon } from "lucide-react";
-import { Activity, Home, LayoutDashboard, LogOut, Menu, ShieldCheck, UserRound } from "lucide-react";
+import {
+  Activity,
+  ChevronLeft,
+  ChevronRight,
+  Home,
+  LayoutDashboard,
+  Link2,
+  LogOut,
+  Menu,
+  ShieldCheck,
+  UserRound
+} from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import {
   AlertDialog,
@@ -24,6 +35,7 @@ import { cn } from "@/lib/utils";
 
 const navigationItems = [
   { label: "Overview", icon: LayoutDashboard, href: "/dashboard", active: true },
+  { label: "Short URL", icon: Link2, href: "/url", active: false },
   { label: "Profile", icon: UserRound, href: "/profile", active: false }
 ];
 
@@ -31,6 +43,7 @@ const frontendRoutes = [
   { method: "GET", path: "/", source: "frontend/app/page.tsx" },
   { method: "GET", path: "/login", source: "frontend/app/login/page.tsx" },
   { method: "GET", path: "/dashboard", source: "frontend/app/dashboard/page.tsx" },
+  { method: "GET", path: "/url", source: "frontend/app/url/page.tsx" },
   { method: "GET", path: "/profile", source: "frontend/app/profile/page.tsx" },
   { method: "GET", path: "/2fa", source: "frontend/app/2fa/page.tsx" }
 ];
@@ -41,7 +54,10 @@ const backendRoutes = [
   { method: "POST", path: "/api/auth/register", source: "backend/src/routes/auth.routes.ts" },
   { method: "POST", path: "/api/auth/login", source: "backend/src/routes/auth.routes.ts" },
   { method: "POST", path: "/api/auth/forgot-password", source: "backend/src/routes/auth.routes.ts" },
-  { method: "POST", path: "/api/auth/reset-password", source: "backend/src/routes/auth.routes.ts" }
+  { method: "POST", path: "/api/auth/reset-password", source: "backend/src/routes/auth.routes.ts" },
+  { method: "GET", path: "/api/urls", source: "backend/src/routes/short-url.routes.ts" },
+  { method: "POST", path: "/api/urls", source: "backend/src/routes/short-url.routes.ts" },
+  { method: "GET", path: "/u/:code", source: "backend/src/app.ts" }
 ];
 
 export default function DashboardPage() {
@@ -50,6 +66,7 @@ export default function DashboardPage() {
   const [isCheckingSession, setIsCheckingSession] = useState(true);
   const [apiHealth, setApiHealth] = useState<"unknown" | "online" | "offline">("unknown");
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -96,41 +113,50 @@ export default function DashboardPage() {
         </aside>
 
         <section className="flex min-w-0 flex-col">
-          <header className="sticky top-0 z-10 flex h-16 items-center gap-3 border-b bg-background/95 px-4 backdrop-blur sm:px-6">
-            <Button className="lg:hidden" size="icon" variant="ghost" type="button">
+          <header className="sticky top-0 z-10 flex min-h-16 items-center gap-3 border-b bg-background/95 px-4 py-3 backdrop-blur sm:px-6">
+            <Button
+              className="lg:hidden"
+              size="icon"
+              variant="ghost"
+              type="button"
+              onClick={() => setIsMobileSidebarOpen(true)}
+            >
               <Menu className="size-5" />
             </Button>
             <div className="min-w-0 flex-1">
               <p className="text-sm text-muted-foreground">Dashboard</p>
-              <h1 className="truncate text-lg font-semibold">Xin chào, {session.user.fullName}</h1>
+              <h1 className="text-base font-semibold leading-6 sm:text-lg">Xin chào, {session.user.fullName}</h1>
             </div>
-            <Badge variant={apiHealth === "online" ? "default" : "secondary"}>
+            <Badge className="shrink-0" variant={apiHealth === "online" ? "default" : "secondary"}>
               {apiHealth === "online" ? "API online" : "API offline"}
             </Badge>
           </header>
 
-          <div className="border-b bg-sidebar px-4 py-4 lg:hidden">
-            <SidebarContent
-              session={session}
-              apiHealth={apiHealth}
-              logout={() => setShowLogoutConfirm(true)}
-              compact
-            />
-          </div>
+          {isMobileSidebarOpen ? (
+            <div
+              className="fixed inset-0 z-40 bg-foreground/20 backdrop-blur-sm lg:hidden"
+              onClick={() => setIsMobileSidebarOpen(false)}
+            >
+              <aside
+                className="h-full w-[min(320px,86vw)] border-r bg-sidebar p-4 text-sidebar-foreground shadow-xl"
+                onClick={(event) => event.stopPropagation()}
+              >
+                <SidebarContent
+                  session={session}
+                  apiHealth={apiHealth}
+                  logout={() => setShowLogoutConfirm(true)}
+                />
+              </aside>
+            </div>
+          ) : null}
 
-          <div className="flex-1 space-y-6 p-4 sm:p-6">
-            <section className="grid gap-4 md:grid-cols-3">
-              <StatCard title="User ID" value={`#${session.user.id}`} icon={UserRound} />
-              <StatCard title="Auth status" value="Authenticated" icon={ShieldCheck} />
-              <StatCard title="Backend" value={apiHealth === "online" ? "Healthy" : "Unavailable"} icon={Activity} />
-            </section>
-
+          <div className="flex-1 space-y-4 p-4 sm:space-y-6 sm:p-6">
             <Card>
               <CardHeader>
                 <CardTitle>Routes</CardTitle>
                 <CardDescription>Thống kê route của frontend và backend.</CardDescription>
               </CardHeader>
-              <CardContent className="grid gap-4 xl:grid-cols-2">
+              <CardContent className="grid gap-4 p-4 pt-0 sm:p-5 sm:pt-0 xl:grid-cols-2">
                 <RouteTable title="Frontend routes" rows={frontendRoutes} />
                 <RouteTable title="Backend routes" rows={backendRoutes} />
               </CardContent>
@@ -206,7 +232,7 @@ function SidebarContent({
         })}
       </nav>
 
-      <div className="mt-auto space-y-3 px-2">
+      <div className="mt-auto grid gap-3 px-2">
         <div className="rounded-lg border bg-background p-3">
           <p className="text-xs font-medium text-muted-foreground">API status</p>
           <p className="mt-1 text-sm font-semibold">{apiHealth === "online" ? "Online" : "Offline"}</p>
@@ -227,31 +253,91 @@ function RouteTable({
   title: string;
   rows: Array<{ method: string; path: string; source: string }>;
 }) {
+  const pageSize = 10;
+  const [page, setPage] = useState(1);
+
+  const totalPages = Math.max(1, Math.ceil(rows.length / pageSize));
+  const currentPage = Math.min(page, totalPages);
+  const visibleRows = useMemo(() => {
+    const start = (currentPage - 1) * pageSize;
+    return rows.slice(start, start + pageSize);
+  }, [currentPage, rows]);
+
   return (
     <div className="space-y-3">
       <div>
         <p className="text-sm font-semibold">{title}</p>
-        <p className="text-xs text-muted-foreground">{rows.length} routes</p>
+        <p className="text-xs text-muted-foreground">
+          {rows.length} routes, page {currentPage} of {totalPages}
+        </p>
       </div>
-      <div className="overflow-hidden rounded-lg border">
-        <table className="w-full border-collapse text-sm">
+      <div className="grid gap-3 md:hidden">
+        {visibleRows.map((route) => (
+          <div key={`${route.method}-${route.path}`} className="rounded-lg border p-3">
+            <div className="flex items-center justify-between gap-3">
+              <Badge variant="secondary">{route.method}</Badge>
+              <span className="text-xs text-muted-foreground">
+                {currentPage}/{totalPages}
+              </span>
+            </div>
+            <p className="mt-3 break-all font-mono text-xs">{route.path}</p>
+            <p className="mt-2 break-all text-xs text-muted-foreground">{route.source}</p>
+          </div>
+        ))}
+        {visibleRows.length === 0 ? (
+          <div className="rounded-lg border px-4 py-6 text-center text-sm text-muted-foreground">No routes</div>
+        ) : null}
+      </div>
+      <div className="hidden overflow-hidden rounded-lg border md:block">
+        <table className="w-full table-fixed border-collapse text-sm">
           <thead className="bg-muted/60 text-left">
             <tr>
-              <th className="px-4 py-3 font-medium">Method</th>
-              <th className="px-4 py-3 font-medium">Path</th>
-              <th className="px-4 py-3 font-medium">Source</th>
+              <th className="w-[18%] px-4 py-3 font-medium">Method</th>
+              <th className="w-[32%] px-4 py-3 font-medium">Path</th>
+              <th className="w-[50%] px-4 py-3 font-medium">Source</th>
             </tr>
           </thead>
           <tbody>
-            {rows.map((route) => (
+            {visibleRows.map((route) => (
               <tr key={`${route.method}-${route.path}`} className="border-t">
                 <td className="px-4 py-3 font-medium">{route.method}</td>
-                <td className="px-4 py-3 font-mono text-xs">{route.path}</td>
-                <td className="px-4 py-3 text-muted-foreground">{route.source}</td>
+                <td className="break-all px-4 py-3 font-mono text-xs">{route.path}</td>
+                <td className="break-all px-4 py-3 text-muted-foreground">{route.source}</td>
               </tr>
             ))}
+            {visibleRows.length === 0 ? (
+              <tr className="border-t">
+                <td className="px-4 py-6 text-center text-sm text-muted-foreground" colSpan={3}>
+                  No routes
+                </td>
+              </tr>
+            ) : null}
           </tbody>
         </table>
+      </div>
+      <div className="flex items-center justify-between gap-3">
+        <Button
+          className="min-w-0 flex-1 sm:flex-none"
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={() => setPage((current) => Math.max(1, current - 1))}
+          disabled={currentPage <= 1}
+        >
+          <ChevronLeft className="size-4" />
+          Prev
+        </Button>
+        <Button
+          className="min-w-0 flex-1 sm:flex-none"
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={() => setPage((current) => Math.min(totalPages, current + 1))}
+          disabled={currentPage >= totalPages}
+        >
+          Next
+          <ChevronRight className="size-4" />
+        </Button>
       </div>
     </div>
   );
@@ -268,12 +354,12 @@ function StatCard({
 }) {
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center justify-between gap-4">
-        <div>
+      <CardHeader className="flex flex-row items-center justify-between gap-4 p-4 sm:p-6">
+        <div className="min-w-0">
           <CardDescription>{title}</CardDescription>
-          <CardTitle className="mt-2 text-2xl">{value}</CardTitle>
+          <CardTitle className="mt-2 text-xl sm:text-2xl">{value}</CardTitle>
         </div>
-        <div className="flex size-10 items-center justify-center rounded-lg bg-muted">
+        <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-muted">
           <Icon className="size-5 text-muted-foreground" />
         </div>
       </CardHeader>
