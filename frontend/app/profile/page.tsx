@@ -1,7 +1,17 @@
 "use client";
 
 import type { LucideIcon } from "lucide-react";
-import { Activity, Home, LayoutDashboard, LogOut, Menu, ShieldCheck, UserRound } from "lucide-react";
+import {
+  Activity,
+  BarChart3,
+  Database,
+  Home,
+  LayoutDashboard,
+  LogOut,
+  Menu,
+  ShieldCheck,
+  UserRound
+} from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -23,28 +33,11 @@ import { AuthSession, clearSession, readStoredSession, requestJson } from "@/lib
 import { cn } from "@/lib/utils";
 
 const navigationItems = [
-  { label: "Overview", icon: LayoutDashboard, href: "/dashboard", active: true },
-  { label: "Profile", icon: UserRound, href: "/profile", active: false }
+  { label: "Overview", icon: LayoutDashboard, href: "/dashboard", active: false },
+  { label: "Profile", icon: UserRound, href: "/profile", active: true }
 ];
 
-const frontendRoutes = [
-  { method: "GET", path: "/", source: "frontend/app/page.tsx" },
-  { method: "GET", path: "/login", source: "frontend/app/login/page.tsx" },
-  { method: "GET", path: "/dashboard", source: "frontend/app/dashboard/page.tsx" },
-  { method: "GET", path: "/profile", source: "frontend/app/profile/page.tsx" },
-  { method: "GET", path: "/2fa", source: "frontend/app/2fa/page.tsx" }
-];
-
-const backendRoutes = [
-  { method: "GET", path: "/health", source: "backend/src/app.ts" },
-  { method: "GET", path: "/api/hello", source: "backend/src/app.ts" },
-  { method: "POST", path: "/api/auth/register", source: "backend/src/routes/auth.routes.ts" },
-  { method: "POST", path: "/api/auth/login", source: "backend/src/routes/auth.routes.ts" },
-  { method: "POST", path: "/api/auth/forgot-password", source: "backend/src/routes/auth.routes.ts" },
-  { method: "POST", path: "/api/auth/reset-password", source: "backend/src/routes/auth.routes.ts" }
-];
-
-export default function DashboardPage() {
+export default function ProfilePage() {
   const router = useRouter();
   const [session, setSession] = useState<AuthSession | null>(null);
   const [isCheckingSession, setIsCheckingSession] = useState(true);
@@ -88,11 +81,7 @@ export default function DashboardPage() {
     <main className="min-h-svh bg-background text-foreground">
       <div className="grid min-h-svh lg:grid-cols-[260px_1fr]">
         <aside className="sticky top-0 hidden h-svh border-r bg-sidebar text-sidebar-foreground lg:flex lg:flex-col">
-          <SidebarContent
-            session={session}
-            apiHealth={apiHealth}
-            logout={() => setShowLogoutConfirm(true)}
-          />
+          <SidebarContent session={session} apiHealth={apiHealth} logout={() => setShowLogoutConfirm(true)} />
         </aside>
 
         <section className="flex min-w-0 flex-col">
@@ -101,8 +90,8 @@ export default function DashboardPage() {
               <Menu className="size-5" />
             </Button>
             <div className="min-w-0 flex-1">
-              <p className="text-sm text-muted-foreground">Dashboard</p>
-              <h1 className="truncate text-lg font-semibold">Xin chào, {session.user.fullName}</h1>
+              <p className="text-sm text-muted-foreground">Profile</p>
+              <h1 className="truncate text-lg font-semibold">Hồ sơ của {session.user.fullName}</h1>
             </div>
             <Badge variant={apiHealth === "online" ? "default" : "secondary"}>
               {apiHealth === "online" ? "API online" : "API offline"}
@@ -125,14 +114,54 @@ export default function DashboardPage() {
               <StatCard title="Backend" value={apiHealth === "online" ? "Healthy" : "Unavailable"} icon={Activity} />
             </section>
 
+            <section className="grid gap-4 xl:grid-cols-[1.15fr_0.85fr]">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Hồ sơ</CardTitle>
+                  <CardDescription>Thông tin user được trả về từ backend.</CardDescription>
+                </CardHeader>
+                <CardContent className="grid gap-3 sm:grid-cols-2">
+                  <InfoRow label="Họ tên" value={session.user.fullName} />
+                  <InfoRow label="Email" value={session.user.email} />
+                  <InfoRow label="Ngày tạo" value={formatDate(session.user.createdAt)} />
+                  <InfoRow label="Cập nhật" value={formatDate(session.user.updatedAt)} />
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Access token</CardTitle>
+                  <CardDescription>Token hiện được lưu trong localStorage.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <code className="block break-all rounded-lg border bg-muted p-3 text-xs leading-6 text-muted-foreground">
+                    {maskToken(session.token)}
+                  </code>
+                </CardContent>
+              </Card>
+            </section>
+
             <Card>
               <CardHeader>
-                <CardTitle>Routes</CardTitle>
-                <CardDescription>Thống kê route của frontend và backend.</CardDescription>
+                <CardTitle>Hoạt động gần đây</CardTitle>
+                <CardDescription>Những trạng thái chính liên quan đến phiên đăng nhập.</CardDescription>
               </CardHeader>
-              <CardContent className="grid gap-4 xl:grid-cols-2">
-                <RouteTable title="Frontend routes" rows={frontendRoutes} />
-                <RouteTable title="Backend routes" rows={backendRoutes} />
+              <CardContent className="grid gap-3">
+                <ActivityRow
+                  icon={BarChart3}
+                  title="Dashboard updated"
+                  description="Dashboard hiện tập trung vào thống kê route."
+                />
+                <ActivityRow
+                  icon={Database}
+                  title="Profile loaded"
+                  description="Thông tin hồ sơ đang được lấy từ session backend trả về."
+                />
+                <ActivityRow
+                  icon={ShieldCheck}
+                  title="Session active"
+                  description="Phiên đăng nhập vẫn được lưu trong localStorage."
+                />
               </CardContent>
             </Card>
           </div>
@@ -220,43 +249,6 @@ function SidebarContent({
   );
 }
 
-function RouteTable({
-  title,
-  rows
-}: {
-  title: string;
-  rows: Array<{ method: string; path: string; source: string }>;
-}) {
-  return (
-    <div className="space-y-3">
-      <div>
-        <p className="text-sm font-semibold">{title}</p>
-        <p className="text-xs text-muted-foreground">{rows.length} routes</p>
-      </div>
-      <div className="overflow-hidden rounded-lg border">
-        <table className="w-full border-collapse text-sm">
-          <thead className="bg-muted/60 text-left">
-            <tr>
-              <th className="px-4 py-3 font-medium">Method</th>
-              <th className="px-4 py-3 font-medium">Path</th>
-              <th className="px-4 py-3 font-medium">Source</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((route) => (
-              <tr key={`${route.method}-${route.path}`} className="border-t">
-                <td className="px-4 py-3 font-medium">{route.method}</td>
-                <td className="px-4 py-3 font-mono text-xs">{route.path}</td>
-                <td className="px-4 py-3 text-muted-foreground">{route.source}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  );
-}
-
 function StatCard({
   title,
   value,
@@ -279,4 +271,52 @@ function StatCard({
       </CardHeader>
     </Card>
   );
+}
+
+function InfoRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-lg border bg-muted/40 p-3">
+      <p className="text-xs font-medium uppercase tracking-normal text-muted-foreground">{label}</p>
+      <p className="mt-1 break-words text-sm font-medium">{value}</p>
+    </div>
+  );
+}
+
+function ActivityRow({
+  icon: Icon,
+  title,
+  description
+}: {
+  icon: LucideIcon;
+  title: string;
+  description: string;
+}) {
+  return (
+    <div className="flex gap-3 rounded-lg border p-3">
+      <div className="flex size-9 items-center justify-center rounded-lg bg-muted">
+        <Icon className="size-4 text-muted-foreground" />
+      </div>
+      <div>
+        <p className="text-sm font-medium">{title}</p>
+        <p className="mt-1 text-sm text-muted-foreground">{description}</p>
+      </div>
+    </div>
+  );
+}
+
+function maskToken(token: string) {
+  return `${token.slice(0, 18)}...${token.slice(-10)}`;
+}
+
+function formatDate(value: string) {
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return value;
+  }
+
+  return new Intl.DateTimeFormat("vi-VN", {
+    dateStyle: "medium",
+    timeStyle: "short"
+  }).format(date);
 }
