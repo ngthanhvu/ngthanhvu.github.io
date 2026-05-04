@@ -1,8 +1,6 @@
 "use client";
 
-import type { LucideIcon } from "lucide-react";
 import {
-  Activity,
   ChevronLeft,
   ChevronRight,
   Home,
@@ -10,7 +8,6 @@ import {
   Link2,
   LogOut,
   Menu,
-  ShieldCheck,
   UserRound
 } from "lucide-react";
 import Link from "next/link";
@@ -34,17 +31,17 @@ import { AuthSession, clearSession, readStoredSession, requestJson } from "@/lib
 import { cn } from "@/lib/utils";
 
 const navigationItems = [
-  { label: "Overview", icon: LayoutDashboard, href: "/dashboard", active: true },
-  { label: "Short URL", icon: Link2, href: "/url", active: false },
-  { label: "Profile", icon: UserRound, href: "/profile", active: false }
+  { label: "Overview", icon: LayoutDashboard, href: "/admin/dashboard", active: true },
+  { label: "Short URL", icon: Link2, href: "/admin/url", active: false },
+  { label: "Profile", icon: UserRound, href: "/admin/profile", active: false }
 ];
 
 const frontendRoutes = [
   { method: "GET", path: "/", source: "frontend/app/page.tsx" },
   { method: "GET", path: "/login", source: "frontend/app/login/page.tsx" },
-  { method: "GET", path: "/dashboard", source: "frontend/app/dashboard/page.tsx" },
-  { method: "GET", path: "/url", source: "frontend/app/url/page.tsx" },
-  { method: "GET", path: "/profile", source: "frontend/app/profile/page.tsx" },
+  { method: "GET", path: "/admin/dashboard", source: "frontend/app/admin/dashboard/page.tsx" },
+  { method: "GET", path: "/admin/url", source: "frontend/app/admin/url/page.tsx" },
+  { method: "GET", path: "/admin/profile", source: "frontend/app/admin/profile/page.tsx" },
   { method: "GET", path: "/2fa", source: "frontend/app/2fa/page.tsx" }
 ];
 
@@ -156,7 +153,7 @@ export default function DashboardPage() {
                 <CardTitle>Routes</CardTitle>
                 <CardDescription>Thống kê route của frontend và backend.</CardDescription>
               </CardHeader>
-              <CardContent className="grid gap-4 p-4 pt-0 sm:p-5 sm:pt-0 xl:grid-cols-2">
+              <CardContent className="grid items-start gap-4 p-4 pt-0 sm:p-5 sm:pt-0 xl:grid-cols-2">
                 <RouteTable title="Frontend routes" rows={frontendRoutes} />
                 <RouteTable title="Backend routes" rows={backendRoutes} />
               </CardContent>
@@ -340,29 +337,5 @@ function RouteTable({
         </Button>
       </div>
     </div>
-  );
-}
-
-function StatCard({
-  title,
-  value,
-  icon: Icon
-}: {
-  title: string;
-  value: string;
-  icon: LucideIcon;
-}) {
-  return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between gap-4 p-4 sm:p-6">
-        <div className="min-w-0">
-          <CardDescription>{title}</CardDescription>
-          <CardTitle className="mt-2 text-xl sm:text-2xl">{value}</CardTitle>
-        </div>
-        <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-muted">
-          <Icon className="size-5 text-muted-foreground" />
-        </div>
-      </CardHeader>
-    </Card>
   );
 }

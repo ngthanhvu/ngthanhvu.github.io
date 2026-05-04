@@ -4,6 +4,7 @@ import { Check, Clock3, Copy, KeyRound } from "lucide-react";
 import { type FormEvent, useEffect, useState } from "react";
 import { toast } from "sonner";
 
+import { PublicShell } from "@/components/public-shell";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -100,22 +101,23 @@ export default function TwoFactorPage() {
   };
 
   return (
-    <main className="min-h-svh bg-muted/40 px-4 py-6 text-foreground sm:px-6 lg:px-8">
-      <div className="mx-auto grid min-h-[calc(100svh-3rem)] w-full max-w-2xl place-items-center">
-        <Card className="w-full max-w-xl">
-          <CardHeader className="p-4 sm:p-6">
+    <PublicShell eyebrow="Tiện ích" title="2FA Generator">
+      <div className="grid w-full items-start gap-4 xl:grid-cols-[0.85fr_1.15fr]">
+        <Card>
+          <CardHeader>
             <Badge className="w-fit" variant="secondary">
               2FA Tool
             </Badge>
             <CardTitle className="text-xl sm:text-2xl">Tạo mã 2FA</CardTitle>
             <CardDescription>Nhập secret base32 hoặc otpauth:// URI để xem mã TOTP hiện tại.</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4 p-4 sm:p-6">
-            <form className="space-y-3" onSubmit={submitSecret}>
+          <CardContent className="space-y-5">
+            <form className="space-y-4" onSubmit={submitSecret}>
               <div className="space-y-2">
                 <Label htmlFor="secret">Secret</Label>
                 <Input
                   id="secret"
+                  className="h-11"
                   value={secretInput}
                   onChange={(event) => setSecretInput(event.target.value)}
                   placeholder="JBSWY3DPEHPK3PXP hoặc otpauth://..."
@@ -130,7 +132,7 @@ export default function TwoFactorPage() {
                   Tạo mã
                 </Button>
                 <Button type="button" variant="outline" className="w-full sm:w-auto" onClick={resetSecret}>
-                  Xoá
+                  Xóa
                 </Button>
               </div>
             </form>
@@ -141,34 +143,60 @@ export default function TwoFactorPage() {
                 <AlertDescription>{error}</AlertDescription>
               </Alert>
             ) : null}
+          </CardContent>
+        </Card>
 
-            <div className="rounded-lg border bg-background p-4 sm:p-5">
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <div className="min-w-0">
-                  <p className="text-xs font-medium uppercase tracking-normal text-muted-foreground">Mã hiện tại</p>
-                  <p className="mt-2 break-all font-mono text-3xl font-semibold tracking-[0.12em] sm:text-4xl sm:tracking-[0.2em]">
-                    {code ? code : "------"}
-                  </p>
-                  <p className="mt-2 flex items-center gap-2 text-sm text-muted-foreground">
-                    <Clock3 className="size-4" />
-                    Còn {remainingSeconds} giây
-                  </p>
-                </div>
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="w-full sm:w-9"
-                  size="icon"
-                  onClick={copyCode}
-                  disabled={!code}
-                >
-                  {isCopied ? <Check className="size-4" /> : <Copy className="size-4" />}
-                </Button>
+        <Card>
+          <CardHeader>
+            <CardTitle>Mã hiện tại</CardTitle>
+            <CardDescription>Mã tự cập nhật theo chu kỳ 30 giây khi secret hợp lệ.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="rounded-lg border bg-muted/40 p-5 sm:p-8">
+              <p className="text-xs font-medium uppercase tracking-normal text-muted-foreground">Mã TOTP</p>
+              <p className="mt-4 break-all font-mono text-5xl font-semibold tracking-[0.12em] sm:text-6xl lg:text-7xl">
+                {code ? code : "------"}
+              </p>
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-[1fr_auto] sm:items-center">
+              <div className="rounded-lg border p-4">
+                <p className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Clock3 className="size-4" />
+                  Thời gian còn lại
+                </p>
+                <p className="mt-2 text-2xl font-semibold">{remainingSeconds} giây</p>
               </div>
+              <Button
+                type="button"
+                variant="outline"
+                className="h-14 w-full sm:w-14"
+                size="icon"
+                onClick={copyCode}
+                disabled={!code}
+                aria-label="Copy 2FA code"
+              >
+                {isCopied ? <Check className="size-5" /> : <Copy className="size-5" />}
+              </Button>
             </div>
           </CardContent>
         </Card>
+
+        <div className="grid gap-4 xl:col-span-2 md:grid-cols-3">
+          <InfoCard title="Không cần đăng nhập" description="Công cụ chạy trực tiếp trên trình duyệt người dùng." />
+          <InfoCard title="Secret linh hoạt" description="Hỗ trợ cả base32 secret và otpauth URI." />
+          <InfoCard title="Copy nhanh" description="Sao chép mã hiện tại ngay khi mã được tạo." />
+        </div>
       </div>
-    </main>
+    </PublicShell>
+  );
+}
+
+function InfoCard({ title, description }: { title: string; description: string }) {
+  return (
+    <div className="rounded-lg border bg-card p-4">
+      <p className="text-sm font-medium">{title}</p>
+      <p className="mt-1 text-sm text-muted-foreground">{description}</p>
+    </div>
   );
 }

@@ -48,11 +48,11 @@ const navigationItems = [
   {
     label: "Tổng quan",
     icon: LayoutDashboard,
-    href: "/dashboard",
+    href: "/admin/dashboard",
     active: false,
   },
-  { label: "Short URL", icon: Link2, href: "/url", active: false },
-  { label: "Hồ sơ", icon: UserRound, href: "/profile", active: true },
+  { label: "Short URL", icon: Link2, href: "/admin/url", active: false },
+  { label: "Hồ sơ", icon: UserRound, href: "/admin/profile", active: true },
 ];
 
 export default function ProfilePage() {
@@ -153,7 +153,7 @@ export default function ProfilePage() {
           ) : null}
 
           <div className="flex-1 space-y-4 p-4 sm:space-y-6 sm:p-6">
-            <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+            <section className="grid items-start gap-3 sm:grid-cols-2 xl:grid-cols-3">
               <StatCard
                 title="User ID"
                 value={`#${session.user.id}`}
@@ -171,7 +171,7 @@ export default function ProfilePage() {
               />
             </section>
 
-            <section className="grid gap-4 xl:grid-cols-[1.15fr_0.85fr]">
+            <section className="grid items-start gap-4 xl:grid-cols-[1.15fr_0.85fr]">
               <Card>
                 <CardHeader>
                   <CardTitle>Hồ sơ</CardTitle>

@@ -20,7 +20,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (readStoredSession()) {
-      router.replace("/dashboard");
+      router.replace("/admin/dashboard");
     }
   }, [router]);
 
@@ -39,7 +39,7 @@ export default function LoginPage() {
         description: "Đang chuyển đến dashboard..."
       });
       window.setTimeout(() => {
-        router.push("/dashboard");
+        router.push("/admin/dashboard");
       }, 700);
     } catch (error) {
       toast.error("Đăng nhập thất bại", {
